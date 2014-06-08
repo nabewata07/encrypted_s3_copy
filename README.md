@@ -1,6 +1,6 @@
 # EncryptedS3Copy
 
-TODO: Write a gem description
+Tool to upload files to AWS S3 with client-side encryption and download client-side encrypted files.
 
 ## Installation
 
@@ -10,7 +10,7 @@ Add this line to your application's Gemfile:
 
 And then execute:
 
-    $ bundle
+    $ bundle install
 
 Or install it yourself as:
 
@@ -18,11 +18,28 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+command options
+
+    -k, --key-file=KEY_FILE_PATH
+    -s, --source=SOURCE_PATH
+    -d, --dest=DEST_PATH
+    -r, --recursive
+
+### upload
+#### single file
+    $ encrypted_s3_copy -k /path/to/symmetric/key/file -s /path/to/local/file -d s3://bucket/suffix/to/file
+#### recursive mode
+    $ encrypted_s3_copy -k /path/to/symmetric/key/file -s /path/to/local/directory/ -d s3://bucket/suffix/to/directory/ --recursive
+
+### download
+#### single file
+    $ encrypted_s3_copy -k /path/to/symmetric/key/file -s s3://bucket/suffix/to/file -d /path/to/local/file
+#### recursive mode
+    $ encrypted_s3_copy -k /path/to/symmetric/key/file -s s3://bucket/suffix/to/directory/ -d /path/to/local/directory/ --recursive
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/encrypted_s3_copy/fork )
+1. Fork it ( https://github.com/nabewata07/encrypted_s3_copy/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
