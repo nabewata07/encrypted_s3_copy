@@ -34,22 +34,22 @@ describe EncryptedS3Copy::Client do
         subject.before
       end
       it 'should be given argument of source file path' do
-        expect(opt_double).to receive(:on).with('-s', '--source=SOURCE')
+        expect(opt_double).to receive(:on).with('-s', '--source=SOURCE_PATH')
         subject.before
       end
       it 'should set source file path to instance variable' do
-        allow(opt_double).to receive(:on).with('-s', '--source=SOURCE').
+        allow(opt_double).to receive(:on).with('-s', '--source=SOURCE_PATH').
           and_yield('source_file_path')
         subject.before
         path = subject.instance_variable_get(:@source)
         expect(path).to eq('source_file_path')
       end
       it 'should be given argument of destination file path' do
-        expect(opt_double).to receive(:on).with('-d', '--dest=DEST')
+        expect(opt_double).to receive(:on).with('-d', '--dest=DEST_PATH')
         subject.before
       end
       it 'should set destination file path to instance variable' do
-        allow(opt_double).to receive(:on).with('-d', '--dest=DEST').
+        allow(opt_double).to receive(:on).with('-d', '--dest=DEST_PATH').
           and_yield('dest_file_path')
         subject.before
         path = subject.instance_variable_get(:@dest)
