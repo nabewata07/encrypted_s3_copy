@@ -2,6 +2,7 @@ require 'aws-sdk'
 require 'json'
 require 'optparse'
 require 'base64'
+require 'fileutils'
 
 module EncryptedS3Copy
 class Client
