@@ -18,6 +18,17 @@ Or install it yourself as:
 
 ## Usage
 
+### generate symmetric key
+command options
+
+    -k, --key-file=KEY_FILE_PATH
+
+For client side encryption of AWS S3, generate symmetric key and save to file.
+
+    $ generate_symmetric_key -k /path/to/symmetric_key/file
+
+### Upload or download encrypted file from/to AWS S3
+
 command options
 
     -k, --key-file=KEY_FILE_PATH
