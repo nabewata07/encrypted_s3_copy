@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 require 'encrypted_s3_copy'
 
-client = EncryptedS3Copy::Client.new
+client = EncryptedS3Copy::KeyGenerator.new
 client.execute
