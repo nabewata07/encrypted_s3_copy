@@ -25,7 +25,7 @@ command options
 
 For client side encryption of AWS S3, generate symmetric key and save to file.
 
-    $ generate_symmetric_key -k /path/to/symmetric_key/file
+    $ aes_key_gen -k /path/to/symmetric_key/file
 
 ### Upload or download encrypted file from/to AWS S3
 
