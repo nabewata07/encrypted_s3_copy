@@ -1,5 +1,6 @@
+require 'spec_helper'
 # require 'simplecov'
-require_relative '../../lib/encrypted_s3_copy/client'
+# require_relative '../../lib/encrypted_s3_copy/client'
 
 describe EncryptedS3Copy::Client do
   let(:bucket_name) { 'test_bkt' }
@@ -103,7 +104,7 @@ describe EncryptedS3Copy::Client do
           expect(subject).to receive(:single_upload).with('dest', 'dir/file02.txt')
           expect(subject).to receive(:single_upload).
             with('dest', 'dir/dir2/file01.txt')
-          subject.send(:handle)
+          subject.handle
         end
       end
 
@@ -149,7 +150,7 @@ describe EncryptedS3Copy::Client do
 
           expect(file_double).to receive(:write).with(chunk_double).exactly(4).times
 
-          subject.send(:handle)
+          subject.handle
         end
       end
     end
@@ -166,7 +167,7 @@ describe EncryptedS3Copy::Client do
       end
       it 'should get bucket object' do
         expect(subject).to receive(:get_s3_object).with(bucket_name, dest_s3_suffix)
-        subject.send(:handle)
+        subject.handle
       end
       context 'when destination path is directory path' do
         let(:remote_dest_path) { "s3://#{bucket_name}/#{dest_s3_suffix}" }
@@ -178,20 +179,20 @@ describe EncryptedS3Copy::Client do
         it 'should complement file name' do
           expected_dest = dest_s3_suffix + 'source_file_name'
           expect(subject).to receive(:get_s3_object).with(bucket_name, expected_dest)
-          subject.send(:handle)
+          subject.handle
         end
       end
       it 'should open source file' do
         expect(File).to receive(:open).with(local_source_path)
-        subject.send(:handle)
+        subject.handle
       end
       it 'should write file contents to s3 object' do
         expect(obj_double).to receive(:write).with(file_double)
-        subject.send(:handle)
+        subject.handle
       end
       it 'should close file pointer' do
         expect(file_double).to receive(:close)
-        subject.send(:handle)
+        subject.handle
       end
     end
 
@@ -204,16 +205,16 @@ describe EncryptedS3Copy::Client do
       end
       it 'should execute single_download' do
         expect(subject).to receive(:single_download)
-        subject.send(:handle)
+        subject.handle
       end
       it 'should get bucket' do
         expect(subject).to receive(:get_s3_object)
-        subject.send(:handle)
+        subject.handle
       end
       context 'when destination path is full path' do
         it 'should open local destination file' do
           expect(File).to receive(:open).with(local_dest_path, 'wb')
-          subject.send(:handle)
+          subject.handle
         end
       end
       context 'when destination path is directory path' do
@@ -221,19 +222,19 @@ describe EncryptedS3Copy::Client do
         it 'should complement file name' do
           expected_dest = local_dest_path + 'source_file_name'
           expect(File).to receive(:open).with(expected_dest, 'wb')
-          subject.send(:handle)
+          subject.handle
         end
       end
       it 'should read s3 object' do
         allow(File).to receive(:open).and_yield(file_double)
         expect(obj_double).to receive(:read)
-        subject.send(:handle)
+        subject.handle
       end
       it 'should write contents of s3 object to local file' do
         allow(File).to receive(:open).and_yield(file_double)
         allow(obj_double).to receive(:read).and_yield('chunk')
         expect(file_double).to receive(:write).with('chunk')
-        subject.send(:handle)
+        subject.handle
       end
     end
 
@@ -242,7 +243,7 @@ describe EncryptedS3Copy::Client do
         subject.instance_variable_set(:@source, local_source_path)
         subject.instance_variable_set(:@dest, local_dest_path)
         message = 'either source path or destination path or both are wrong'
-        expect{ subject.send(:handle) }.to raise_error(RuntimeError, message)
+        expect{ subject.handle }.to raise_error(RuntimeError, message)
       end
     end
   end
@@ -276,6 +277,35 @@ describe EncryptedS3Copy::Client do
       expect(subject).to receive(:before).ordered
       expect(subject).to receive(:handle).ordered
       subject.execute
+    end
+  end
+
+  context 'use as library' do
+    describe ".initialize" do
+      let(:opts) do
+        { key_file_path: '/path/to/key_file',
+          source_path: '/path/to/source_file',
+          destination_path: 's3://bucket/path/to/file' }
+      end
+      let(:client) { described_class.new(opts) }
+      let(:key_str) { "a_key_str\n" }
+
+      before :each do
+        allow(File).to receive(:read).with(opts[:key_file_path]).and_return(key_str)
+      end
+
+      it 'set value of s3_encryption_key' do
+        source_value = client.instance_variable_get(:@source)
+        expect(source_value).to eq(opts[:source_path])
+      end
+      it 'set value of destination_path' do
+        dest_value = client.instance_variable_get(:@dest)
+        expect(dest_value).to eq(opts[:destination_path])
+      end
+      it 'set s3_encryption_key' do
+        expect(AWS).to receive(:config).with(s3_encryption_key: Base64.decode64(key_str.chomp))
+        client
+      end
     end
   end
 end
