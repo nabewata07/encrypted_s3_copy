@@ -8,11 +8,17 @@ module EncryptedS3Copy
 class Client
   # s3://(a_bucket)/(path/to/target_file)
   S3_PATH = /^s3:\/\/([^\/]+)\/(.+)/
+
+  def initialize(opts={})
+    @source = opts[:source_path]
+    @dest = opts[:destination_path]
+    set_s3_encryption_key(opts[:key_file_path]) if opts[:key_file_path]
+  end
+
   def before
     opt = OptionParser.new
     opt.on('-k', '--key-file=KEY_FILE_PATH') do |path|
-      encoded_key = File.read(path)
-      AWS.config(s3_encryption_key: Base64.decode64(encoded_key.chomp))
+      set_s3_encryption_key(path)
     end
     opt.on('-s', '--source=SOURCE_PATH') do |path|
       @source = path
@@ -31,8 +37,6 @@ class Client
     handle
   end
 
-  private
-
   def handle
     if !(@source =~ S3_PATH) && @dest =~ S3_PATH
       if @is_recursive
@@ -50,6 +54,13 @@ class Client
     else
       raise 'either source path or destination path or both are wrong'
     end
+  end
+
+  private
+
+  def set_s3_encryption_key(path)
+    encoded_key = File.read(path)
+    AWS.config(s3_encryption_key: Base64.decode64(encoded_key.chomp))
   end
 
   def recursive_download(bucket_name, suffix)
