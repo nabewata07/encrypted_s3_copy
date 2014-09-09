@@ -1,4 +1,5 @@
 # EncryptedS3Copy
+[![Build Status](https://travis-ci.org/nabewata07/encrypted_s3_copy.svg?branch=master)](https://travis-ci.org/nabewata07/encrypted_s3_copy)
 
 Tool to upload files to AWS S3 with client-side encryption and download client-side encrypted files.
 
