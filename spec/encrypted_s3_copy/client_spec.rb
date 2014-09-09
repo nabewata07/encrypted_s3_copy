@@ -130,13 +130,6 @@ describe EncryptedS3Copy::Client do
           allow(s3_file03_double).to receive(:key).and_return('dir/test/myfile')
           allow(s3_file04_double).to receive(:key).and_return('hoge.txt')
 
-          allow(s3_dir01_double).to receive(:content_length).and_return(0)
-          allow(s3_dir02_double).to receive(:content_length).and_return(0)
-          allow(s3_file01_double).to receive(:content_length).and_return(10)
-          allow(s3_file02_double).to receive(:content_length).and_return(10)
-          allow(s3_file03_double).to receive(:content_length).and_return(10)
-          allow(s3_file04_double).to receive(:content_length).and_return(10)
-
           allow(subject).to receive(:get_s3_objects).with('dest').
             and_return(s3_objects_double)
 

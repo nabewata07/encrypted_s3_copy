@@ -57,7 +57,7 @@ class Client
 
     s3_objects = get_s3_objects(bucket_name)
     s3_objects.with_prefix(suffix).each do |obj|
-      next if obj.content_length < 1
+      next if obj.key =~ /\/$/
       single_download(obj)
     end
   end
